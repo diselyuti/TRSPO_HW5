@@ -13,42 +13,66 @@ namespace TRSPO_HW_4_5
     {
         static void Main()
         {
-            // Потік для сервера
+            // Створюємо потік для сервера
             Thread serverThread = new Thread(ServerMain);
             serverThread.Start();
 
-            // Потік для клієнта
+            // Даємо серверу час на запуск
+            Thread.Sleep(1000);
+
+            // Створюємо потік для клієнта
             Thread clientThread = new Thread(ClientMain);
             clientThread.Start();
 
-            // Чекаємо, доки обидва потоки завершать роботу
+            // Чекаємо завершення обох потоків
             serverThread.Join();
             clientThread.Join();
+
+            Console.ReadLine();
         }
 
         static void ServerMain()
         {
             IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-            int serverPort = 12345;
+            int port = 12345;
 
-            TcpListener listener = new TcpListener(ipAddress, serverPort);
+            TcpListener listener = new TcpListener(ipAddress, port);
             listener.Start();
             Console.WriteLine("Server started. Waiting for connection...");
 
             TcpClient client = listener.AcceptTcpClient();
+            Console.WriteLine("Client connected.");
 
             NetworkStream stream = client.GetStream();
 
+            byte[] receiveBuffer = new byte[4];
+            int bytesRead;
+
             while (true)
             {
-                byte[] buffer = new byte[1024];
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                Console.WriteLine("Server received message from client: " + message);
+                bytesRead = stream.Read(receiveBuffer, 0, 4);
+                if (bytesRead == 0)
+                    break;
 
-                string response = "Your message is " + message;
+                int messageSize = BitConverter.ToInt32(receiveBuffer, 0);
+
+                byte[] messageBuffer = new byte[messageSize];
+                bytesRead = stream.Read(messageBuffer, 0, messageSize);
+
+                if (bytesRead == 0)
+                    break;
+
+                string message = Encoding.UTF8.GetString(messageBuffer);
+
+                Console.WriteLine("Client: " + message);
+
+                // Відправляємо відповідь клієнту
+                string response = "Server: Message recieved.";
                 byte[] responseBuffer = Encoding.UTF8.GetBytes(response);
-                stream.Write(responseBuffer, 0, responseBuffer.Length);
+                int responseSize = responseBuffer.Length;
+
+                stream.Write(BitConverter.GetBytes(responseSize), 0, 4);
+                stream.Write(responseBuffer, 0, responseSize);
             }
         }
 
@@ -59,22 +83,34 @@ namespace TRSPO_HW_4_5
 
             TcpClient client = new TcpClient();
             client.Connect(serverIP, serverPort);
-
             NetworkStream stream = client.GetStream();
 
-            while (true)
+            for (int i = 0; i < 100; i++)
             {
-                Console.Write("Enter message to send to server: ");
-                string message = Console.ReadLine();
+                string message = "Message " + i;
 
-                byte[] buffer = Encoding.UTF8.GetBytes(message);
-                stream.Write(buffer, 0, buffer.Length);
+                byte[] messageBuffer = Encoding.UTF8.GetBytes(message);
+                int messageSize = messageBuffer.Length;
 
-                byte[] responseBuffer = new byte[1024];
-                int bytesRead = stream.Read(responseBuffer, 0, responseBuffer.Length);
-                string response = Encoding.UTF8.GetString(responseBuffer, 0, bytesRead);
-                Console.WriteLine("Server response: " + response);
+                stream.Write(BitConverter.GetBytes(messageSize), 0, 4);
+                stream.Write(messageBuffer, 0, messageSize);
+
+                byte[] responseSizeBuffer = new byte[4];
+                int bytesRead = stream.Read(responseSizeBuffer, 0, 4);
+                if (bytesRead == 0)
+                    break;
+
+                int responseSize = BitConverter.ToInt32(responseSizeBuffer, 0);
+
+                byte[] responseBuffer = new byte[responseSize];
+                bytesRead = stream.Read(responseBuffer, 0, responseSize);
+
+                string response = Encoding.UTF8.GetString(responseBuffer);
+
+                Console.WriteLine("Server: " + response);
             }
+
+            client.Close();
         }
     }
 }
