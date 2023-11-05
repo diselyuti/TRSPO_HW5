@@ -2,7 +2,6 @@ C:\Users\dimas\source\repos\TRSPO_HW_4_5\TRSPO_HW_4_5\bin\Debug\TRSPO_HW_4_5.exe
 C:\Users\dimas\source\repos\TRSPO_HW_4_5\TRSPO_HW_4_5\bin\Debug\TRSPO_HW_4_5.exe
 C:\Users\dimas\source\repos\TRSPO_HW_4_5\TRSPO_HW_4_5\bin\Debug\TRSPO_HW_4_5.pdb
 C:\Users\dimas\source\repos\TRSPO_HW_4_5\TRSPO_HW_4_5\obj\Debug\TRSPO_HW_4_5.csproj.AssemblyReference.cache
-C:\Users\dimas\source\repos\TRSPO_HW_4_5\TRSPO_HW_4_5\obj\Debug\TRSPO_HW_4_5.csproj.SuggestedBindingRedirects.cache
 C:\Users\dimas\source\repos\TRSPO_HW_4_5\TRSPO_HW_4_5\obj\Debug\TRSPO_HW_4_5.csproj.CoreCompileInputs.cache
 C:\Users\dimas\source\repos\TRSPO_HW_4_5\TRSPO_HW_4_5\obj\Debug\TRSPO_HW_4_5.exe
 C:\Users\dimas\source\repos\TRSPO_HW_4_5\TRSPO_HW_4_5\obj\Debug\TRSPO_HW_4_5.pdb
